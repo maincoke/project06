@@ -2,16 +2,17 @@
   font-family: gameFont;
   src: url('../fonts/PressStart2P.ttf');
 }
-*{
+
+* {
   box-sizing: border-box;
 }
 
-body{
+body {
   background-image: url('../image/background.jpg');
   background-size: cover;
 }
 
-.main-container{
+.main-container {
   width: 90%;
   margin: 0 auto;
   display: flex;
@@ -19,14 +20,18 @@ body{
   justify-content: space-between;
 }
 
-.main-titulo{
+.main-titulo {
   font-family: gameFont;
   font-size: 3em;
   color: #DCFF0E;
   width: 100%;
 }
 
-.panel-tablero{
+.main-titulo-blink {
+  color: #FF4007;
+}
+
+.panel-tablero {
   width: 70%;
   border: 10px solid #E87306;
   background: rgba(232, 115, 6, 0.5);
@@ -36,7 +41,7 @@ body{
   flex-flow: row wrap;
 }
 
-.panel-score{
+.panel-score {
   width: 25%;
   height: 700px;
   display: flex;
@@ -44,8 +49,9 @@ body{
   justify-content: space-between;
 }
 
-
-.score, .moves, .time{
+.score,
+.moves,
+.time {
   text-align: center;
   height: 23%;
   width: 100%;
@@ -54,25 +60,27 @@ body{
   background: rgba(232, 115, 6, 0.5);
 }
 
-
-.buttons{
+.buttons {
   height: 10%;
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.data-titulo, .data-info{
+.data-titulo,
+.data-info {
   font-family: gameFont;
   color: #E8CA06;
 }
-.titulo-over{
+
+.titulo-over {
   font-family: gameFont;
   font-size: 3em;
   text-align: center;
   color: #DCFF0E;
 }
-.btn-reinicio{
+
+.btn-reinicio {
   background: #E8CA06;
   border: 6px solid #FFB206;
   border-radius: 5px;
@@ -80,27 +88,36 @@ body{
   font-size: 1.2em;
   color: #FF4007;
 }
-.btn-reinicio:hover{
+
+.btn-reinicio:hover {
   color: #fff;
   cursor: pointer;
 }
-.btn-reinicio:active{
+
+.btn-reinicio:active {
   font-size: 1em;
 }
-.data-info{
+
+.data-info {
   font-size: 1.8em;
 }
-div[class^='col']{
+
+div[class^='col'] {
   width: 14.28%;
   display: flex;
   flex-flow: column wrap;
   justify-content: flex-end;
   align-items: center;
-
 }
 
-.elemento{
+.elemento {
+  display: block;
   width: 99.4px;
   height: 96px;
+}
 
+.match-candy {
+  display: none;
+  width: 99.4px;
+  height: 96px;
 }
