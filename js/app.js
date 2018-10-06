@@ -1,7 +1,5 @@
 function blinkingTitle() {
-  setInterval(function() {
-    $('h1.main-titulo').toggleClass('main-titulo-blink', 200);
-  }, 200);
+  setInterval(() => { $('h1.main-titulo').toggleClass('main-titulo-blink', 200) }, 200);
 }
 
 function trampCandies(process) {
@@ -11,18 +9,19 @@ function trampCandies(process) {
 }
 
 function markCandies(candy) {
-  setInterval(function() {
-    candy.toggleClass('match-candy');
-  }, 250);
+  candy.addClass('match-candy');
+  setInterval(() => { candy.toggle('fade') }, 100);
 }
 
 function fillingCandies(element) {
-  var colArray = Array(7);
-  $.each(colArray, function(idx, val) {
-    var randomCandy = Math.floor(Math.random() * 4) + 1;
-    val = $('<img class="elemento" src="image/' + randomCandy.toString() + '.png" />');
-    val.prependTo(element);
-  });
+  if ($(element).children().length < 7) {
+    var colArray = Array(7 - $(element).children().length);
+    $.each(colArray, function(idx, val) {
+      var randomCandy = Math.floor(Math.random() * 4) + 1;
+      val = $('<img class="elemento" src="image/' + randomCandy.toString() + '.png" />');
+      val.prependTo(element);
+    });
+  }
 }
 
 function checkNeighboors(element) {
@@ -45,17 +44,23 @@ function checkNeighboors(element) {
   });
 }
 
-function blinkingCandiesMatch() {
-  setInterval(function() {
-    $('.match-el').toggleClass('elemento', 250);
-  }, 250);
+function popMatchCandies() {
+  var candiesmatch = $($('.panel-tablero')[0]).find($('.match-candy'));
+  //console.log(candiesmatch);
+  if (candiesmatch.length != 0) {
+    setTimeout(() => { candiesmatch.remove() }, 3000);
+    return true;
+  }
+  return false;
 }
 
 $(function() {
   blinkingTitle();
   trampCandies(fillingCandies);
   trampCandies(checkNeighboors);
-  //blinkingCandiesMatch();
+  var keepMatching = popMatchCandies();
+  console.log(keepMatching);
+  setTimeout(() => { trampCandies(fillingCandies) }, 4000);
   /*setTimeout(function() {
     var childs = $('.col-1').children()[3];
     childs.remove();

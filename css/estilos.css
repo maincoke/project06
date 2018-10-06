@@ -111,13 +111,10 @@ div[class^='col'] {
 }
 
 .elemento {
-  display: block;
   width: 99.4px;
   height: 96px;
 }
 
 .match-candy {
-  display: none;
-  width: 99.4px;
-  height: 96px;
+  border-radius: 40%;
 }
