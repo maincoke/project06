@@ -1,3 +1,5 @@
+var candyMoves, pointsMatch, gameTime;
+
 function blinkingTitle() {
   setInterval(() => { $('h1.main-titulo').toggleClass('main-titulo-blink', 200) }, 200);
 }
@@ -8,9 +10,16 @@ function trampCandies(process) {
   });
 }
 
+function emptyCandies(element) {
+  $(element).children().remove();
+}
+
 function markCandies(candy) {
-  candy.addClass('match-candy');
-  setInterval(() => { candy.toggle('fade') }, 100);
+  if (!candy.hasClass('match-candy')) {
+    candy.addClass('match-candy');
+    setInterval(() => { candy.toggle('fade') }, 150);
+    pointsMatch += 10;
+  }
 }
 
 function fillingCandies(element) {
@@ -19,7 +28,8 @@ function fillingCandies(element) {
     $.each(colArray, function(idx, val) {
       var randomCandy = Math.floor(Math.random() * 4) + 1;
       val = $('<img class="elemento" src="image/' + randomCandy.toString() + '.png" />');
-      val.prependTo(element);
+      val.prependTo(element).hide();
+      setTimeout(() => { val.show('bounce', { times: 2 }, 150) }, 150);
     });
   }
 }
@@ -42,13 +52,14 @@ function checkNeighboors(element) {
       }
     }
   });
+  console.log(pointsMatch);
+  $('span#score-text').text(pointsMatch.toString());
 }
 
 function popMatchCandies() {
   var candiesmatch = $($('.panel-tablero')[0]).find($('.match-candy'));
-  //console.log(candiesmatch);
   if (candiesmatch.length != 0) {
-    setTimeout(() => { candiesmatch.remove() }, 3000);
+    setTimeout(() => { candiesmatch.remove() }, 2500);
     return true;
   }
   return false;
@@ -56,13 +67,27 @@ function popMatchCandies() {
 
 $(function() {
   blinkingTitle();
-  trampCandies(fillingCandies);
-  trampCandies(checkNeighboors);
-  var keepMatching = popMatchCandies();
-  console.log(keepMatching);
-  setTimeout(() => { trampCandies(fillingCandies) }, 4000);
-  /*setTimeout(function() {
-    var childs = $('.col-1').children()[3];
-    childs.remove();
-  }, 2000);*/
+  $($('.btn-reinicio')[0]).click(function(evt) {
+    var btnTitle = $(this).text();
+    if (btnTitle != 'Iniciar') {
+      $(this).text('Iniciar');
+      trampCandies(emptyCandies);
+      $('span#score-text').text('0');
+    } else {
+      candyMoves = 0, pointsMatch = 0;
+      $(this).text('Reiniciar');
+      trampCandies(fillingCandies);
+      setTimeout(() => { trampCandies(checkNeighboors) }, 2000);
+      var initMatch, keepMatching;
+      initMatch = setInterval(() => {
+        keepMatching = popMatchCandies();
+        if (!keepMatching) {
+          clearInterval(initMatch);
+        } else {
+          setTimeout(() => { trampCandies(fillingCandies) }, 3000);
+          setTimeout(() => { trampCandies(checkNeighboors) }, 4500);
+        }
+      }, 5000);
+    }
+  });
 });

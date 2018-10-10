@@ -31,6 +31,10 @@ body {
   color: #FF4007;
 }
 
+.blink-border {
+  border: 10px solid #DCFF0E !important;
+}
+
 .panel-tablero {
   width: 70%;
   border: 10px solid #E87306;
