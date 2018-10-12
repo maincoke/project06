@@ -52,8 +52,20 @@ function checkNeighboors(element) {
       }
     }
   });
-  console.log(pointsMatch);
   $('span#score-text').text(pointsMatch.toString());
+}
+
+function draggingCandies(element) {
+  $(element).sortable({
+    change: function(event, ui) {
+      console.log('Change!');
+      setTimeout(() => { trampCandies(checkNeighboors) }, 300);
+    },
+    update: function(event, ui) {
+      console.log('Update!');
+      matchingCandies();
+    }
+  });
 }
 
 function popMatchCandies() {
@@ -63,6 +75,26 @@ function popMatchCandies() {
     return true;
   }
   return false;
+}
+
+function matchingCandies() {
+  var initMatch, keepMatching;
+  initMatch = setInterval(() => {
+    keepMatching = popMatchCandies();
+    if (!keepMatching) {
+      clearInterval(initMatch);
+    } else {
+      /*var matchAdvice = setInterval((keepMatching) => {
+        if (!keepMatching) {
+          clearInterval(matchAdvice);
+        } else {
+          $($('div.panel-tablero')[0]).toggleClass('blink-border', 500);
+        }
+      }, 1000);*/
+      setTimeout(() => { trampCandies(fillingCandies) }, 3000);
+      setTimeout(() => { trampCandies(checkNeighboors) }, 4500);
+    }
+  }, 5000);
 }
 
 $(function() {
@@ -78,16 +110,25 @@ $(function() {
       $(this).text('Reiniciar');
       trampCandies(fillingCandies);
       setTimeout(() => { trampCandies(checkNeighboors) }, 2000);
-      var initMatch, keepMatching;
+      matchingCandies();
+      /*var initMatch, keepMatching;
       initMatch = setInterval(() => {
         keepMatching = popMatchCandies();
         if (!keepMatching) {
           clearInterval(initMatch);
         } else {
+          //var matchAdvice = setInterval((keepMatching) => {
+            if (!keepMatching) {
+              clearInterval(matchAdvice);
+            } else {
+              $($('div.panel-tablero')[0]).toggleClass('blink-border', 500);
+            }
+          //}, 1000);
           setTimeout(() => { trampCandies(fillingCandies) }, 3000);
           setTimeout(() => { trampCandies(checkNeighboors) }, 4500);
         }
-      }, 5000);
+      }, 5000);*/
+      trampCandies(draggingCandies);
     }
   });
 });
