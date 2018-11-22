@@ -6,7 +6,7 @@ var GameMatch = {
   initMatch: 0,
 
   blinkingTitle: function() {
-    titleBlink = setInterval(function() { $('h1.main-titulo:first').toggleClass('main-titulo-blink', 200) }, 200);
+    titleBlink = setInterval(function() { $('h1.main-titulo:first').toggleClass('main-titulo-blink', 150) }, 300);
   },
 
   trampCandies: function(process, popTime, swtimeCheck = false) {
@@ -165,7 +165,7 @@ var GameMatch = {
   },
 
   startGame: function() {
-    //GameMatch.blinkingTitle();
+    GameMatch.blinkingTitle();
     console.clear();
     candyMoves = 0, pointsMatch = 0;
     GameMatch.trampCandies(GameMatch.swapCandies);
@@ -177,7 +177,7 @@ var GameMatch = {
     $('span#score-text').text('0');
     $('span#movimientos-text').text('0');
     clearInterval(titleBlink);
-    clearInterval(initMatch);
+    //clearInterval(initMatch);
   }
 }
 
@@ -188,9 +188,12 @@ $(function() {
     if (btnTitle != 'Iniciar') {
       $(this).text('Iniciar');
       GameMatch.restartGame();
+      stopChrono();
+      resetChrono();
     } else {
       $(this).text('Reiniciar');
       GameMatch.startGame();
+      startChrono();
     }
   });
 });
