@@ -43,6 +43,7 @@ body {
   height: 700px;
   display: flex;
   flex-flow: row wrap;
+  margin-top: 0;
 }
 
 .panel-score {
@@ -112,11 +113,21 @@ div[class^='col'] {
   flex-flow: column wrap;
   justify-content: flex-end;
   align-items: center;
+  margin-top: 0;
 }
 
-.elemento {
+.dragandrop {
+  position: relative;
   width: 99.4px;
-  height: 96px;
+  height: 95px;
+  z-index: 5;
+}
+
+.candy {
+  position: relative;
+  width: 99.4px;
+  height: 95px;
+  z-index: 5;
 }
 
 .match-candy {

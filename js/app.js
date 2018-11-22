@@ -1,13 +1,22 @@
-var candyMoves, pointsMatch, gameTime;
+var candyMoves, pointsMatch, gameTime, titleBlink, initMatch;
 
 function blinkingTitle() {
-  setInterval(() => { $('h1.main-titulo').toggleClass('main-titulo-blink', 200) }, 200);
+  titleBlink = setInterval(function() { $('h1.main-titulo:first').toggleClass('main-titulo-blink', 200) }, 200);
 }
 
-function trampCandies(process) {
-  $.each($('div[class^="col"]'), function(idx) {
-    process($('.col-' + (idx + 1).toString())[0]);
-  });
+function trampCandies(process, popTime, swtimeCheck = false) {
+  var chkTimeNboors = swtimeCheck ? 500 : 2000;
+  if (process === checkNeighboors) {
+    $.each($('div[class^="col"]'), function(idx) {
+      process($('.col-' + (idx + 1).toString())[0], chkTimeNboors);
+    });
+    popMatchCandies(popTime);
+  } else {
+    $.each($('div[class^="col"]'), function(idx) {
+      process($('.col-' + (idx + 1).toString())[0]);
+    });
+    return;
+  }
 }
 
 function emptyCandies(element) {
@@ -17,8 +26,12 @@ function emptyCandies(element) {
 function markCandies(candy) {
   if (!candy.hasClass('match-candy')) {
     candy.addClass('match-candy');
-    setInterval(() => { candy.toggle('fade') }, 150);
+    setInterval(function() { candy.fadeOut(150).fadeIn(150) }, 300);
     pointsMatch += 10;
+  }
+  if (!$('div.panel-tablero:first').hasClass('blink-border')) {
+    $('div.panel-tablero:first').addClass('blink-border');
+    $('.dragandrop').removeClass('candy');
   }
 }
 
@@ -27,108 +40,144 @@ function fillingCandies(element) {
     var colArray = Array(7 - $(element).children().length);
     $.each(colArray, function(idx, val) {
       var randomCandy = Math.floor(Math.random() * 4) + 1;
-      val = $('<img class="elemento" src="image/' + randomCandy.toString() + '.png" />');
+      val = $('<img src="image/' + randomCandy.toString() + '.png" />');
+      val.addClass('candy dragandrop');
       val.prependTo(element).hide();
-      setTimeout(() => { val.show('bounce', { times: 2 }, 150) }, 150);
+      setTimeout(function() { val.show('bounce', { times: 3 }, 300) }, 300);
     });
   }
 }
 
-function checkNeighboors(element) {
-  var candies = $(element).children('.elemento');
-  $.each(candies, function(idx, val) {
-    if ($(this).attr('src') == $(this).prev('.elemento').attr('src') &&
-      $(this).attr('src') == $(this).next('.elemento').attr('src')) {
-      markCandies($(this));
-      markCandies($(this).prev('.elemento'));
-      markCandies($(this).next('.elemento'));
-    }
-    if ($(this).parent().prev().length != 0 && $(this).parent().next().length != 0) {
-      if ($($(this).parent().prev().children('.elemento')[idx]).attr('src') == $(this).attr('src') &&
-        $($(this).parent().next().children('.elemento')[idx]).attr('src') == $(this).attr('src')) {
-        markCandies($(this));
-        markCandies($($(this).parent().prev().children('.elemento')[idx]));
-        markCandies($($(this).parent().next().children('.elemento')[idx]));
+function setDroppableCandy(element) {
+  var candies = $(element).children('.dragandrop');
+  $.each(candies, function() {
+    $(this).droppable({
+      addClasses: false,
+      accept: '.candy',
+      deactivate: function(event, ui) {
+        $(this).droppable('option', 'scope', '');
+      },
+      drop: function(event, ui) {
+        var incomeItem = $(ui.draggable).attr('src');
+        var outgoItem = $(this).attr('src');
+        $(ui.draggable).attr('src', outgoItem);
+        $(ui.helper).attr('src', outgoItem);
+        $(this).attr('src', incomeItem);
+        candyMoves++;
+        $('span#movimientos-text').text(candyMoves.toString());
       }
-    }
-  });
-  $('span#score-text').text(pointsMatch.toString());
-}
-
-function draggingCandies(element) {
-  $(element).sortable({
-    change: function(event, ui) {
-      console.log('Change!');
-      setTimeout(() => { trampCandies(checkNeighboors) }, 300);
-    },
-    update: function(event, ui) {
-      console.log('Update!');
-      matchingCandies();
-    }
+    });
   });
 }
 
-function popMatchCandies() {
-  var candiesmatch = $($('.panel-tablero')[0]).find($('.match-candy'));
-  if (candiesmatch.length != 0) {
-    setTimeout(() => { candiesmatch.remove() }, 2500);
-    return true;
-  }
-  return false;
-}
-
-function matchingCandies() {
-  var initMatch, keepMatching;
-  initMatch = setInterval(() => {
-    keepMatching = popMatchCandies();
-    if (!keepMatching) {
-      clearInterval(initMatch);
-    } else {
-      /*var matchAdvice = setInterval((keepMatching) => {
-        if (!keepMatching) {
-          clearInterval(matchAdvice);
-        } else {
-          $($('div.panel-tablero')[0]).toggleClass('blink-border', 500);
+function setCandiesDrag(element) {
+  var candies = $(element).children('.candy');
+  $.each(candies, function() {
+    $(this).draggable({
+      addClasses: false,
+      cursor: 'pointer',
+      helper: 'clone',
+      scope: 'candies',
+      containment: 'div.panel-tablero:first',
+      revert: 'valid',
+      revertDuration: 300,
+      zIndex: 10,
+      start: function(event, ui) {
+        $(this).css({ opacity: 0 });
+        var candyIndex = ($(this).index() + 1).toString();
+        var candyNboorLeft = $(this).parent().prev().children(':nth-child(' + candyIndex + ')');
+        var candyNboorRight = $(this).parent().next().children(':nth-child(' + candyIndex + ')');
+        var candyNboorUp = $(this).prev();
+        candyNboorLeft.droppable('option', 'scope', 'candies');
+        candyNboorRight.droppable('option', 'scope', 'candies');
+        candyNboorUp.droppable('option', 'scope', 'candies');
+        if ($(this).index() !== 6) {
+          var candyNboorDown = $(this).next();
+          candyNboorDown.droppable('option', 'scope', 'candies');
         }
-      }, 1000);*/
-      setTimeout(() => { trampCandies(fillingCandies) }, 3000);
-      setTimeout(() => { trampCandies(checkNeighboors) }, 4500);
+      }
+    });
+    $(this).on('dragstop', dragAnDropEvent);
+  });
+}
+
+function dragAnDropEvent(event, ui) {
+  dragdisables = Array();
+  $(this).css({ opacity: 1 });
+  dragdisables = $('div.panel-tablero:first').find('.candy');
+  trampCandies(checkNeighboors, 2000, true);
+  return;
+}
+
+function swapCandies(element) {
+  setTimeout(function() {
+    fillingCandies(element);
+    setDroppableCandy(element);
+    setCandiesDrag(element);
+  }, 500);
+}
+
+function checkNeighboors(element, timeCheck) {
+  setTimeout(function() {
+    var candies = $(element).children('.dragandrop');
+    $.each(candies, function(idx) {
+      if ($(this).attr('src') == $(this).prev('.dragandrop').attr('src') &&
+        $(this).attr('src') == $(this).next('.dragandrop').attr('src')) {
+        markCandies($(this));
+        markCandies($(this).prev('.dragandrop'));
+        markCandies($(this).next('.dragandrop'));
+      }
+      if ($(this).parent().prev().length != 0 && $(this).parent().next().length != 0) {
+        if ($($(this).parent().prev().children('.dragandrop')[idx]).attr('src') == $(this).attr('src') &&
+          $($(this).parent().next().children('.dragandrop')[idx]).attr('src') == $(this).attr('src')) {
+          markCandies($(this));
+          markCandies($($(this).parent().prev().children('.dragandrop')[idx]));
+          markCandies($($(this).parent().next().children('.dragandrop')[idx]));
+        }
+      }
+    });
+    $('span#score-text').text(pointsMatch.toString());
+  }, timeCheck);
+}
+
+function popMatchCandies(popTime) {
+  var popMatch = setTimeout(function() {
+    var candiesmatch = $('.panel-tablero:first').find($('.match-candy'));
+    if (candiesmatch.length != 0) {
+      var timepopCandies = candiesmatch.length * 200;
+      candiesmatch.remove();
+      setTimeout(trampCandies(swapCandies), popTime + 300);
+      setTimeout(trampCandies(checkNeighboors, 2500 + timepopCandies), popTime + 600);
+    } else {
+      if ($('div.panel-tablero:first').hasClass('blink-border')) {
+        $('div.panel-tablero:first').removeClass('blink-border')
+        $('.dragandrop').addClass('candy');
+      }
+      clearTimeout(popMatch);
     }
-  }, 5000);
+  }, popTime);
+  return;
 }
 
 $(function() {
-  blinkingTitle();
-  $($('.btn-reinicio')[0]).click(function(evt) {
+  $('.btn-reinicio:first').click(function(evt) {
+    evt.preventDefault();
     var btnTitle = $(this).text();
+    var checkingPop;
     if (btnTitle != 'Iniciar') {
       $(this).text('Iniciar');
       trampCandies(emptyCandies);
       $('span#score-text').text('0');
+      $('span#movimientos-text').text('0');
+      clearInterval(titleBlink);
+      clearInterval(initMatch);
     } else {
+      //blinkingTitle();
+      console.clear();
       candyMoves = 0, pointsMatch = 0;
       $(this).text('Reiniciar');
-      trampCandies(fillingCandies);
-      setTimeout(() => { trampCandies(checkNeighboors) }, 2000);
-      matchingCandies();
-      /*var initMatch, keepMatching;
-      initMatch = setInterval(() => {
-        keepMatching = popMatchCandies();
-        if (!keepMatching) {
-          clearInterval(initMatch);
-        } else {
-          //var matchAdvice = setInterval((keepMatching) => {
-            if (!keepMatching) {
-              clearInterval(matchAdvice);
-            } else {
-              $($('div.panel-tablero')[0]).toggleClass('blink-border', 500);
-            }
-          //}, 1000);
-          setTimeout(() => { trampCandies(fillingCandies) }, 3000);
-          setTimeout(() => { trampCandies(checkNeighboors) }, 4500);
-        }
-      }, 5000);*/
-      trampCandies(draggingCandies);
+      trampCandies(swapCandies);
+      trampCandies(checkNeighboors, 4000);
     }
   });
 });
