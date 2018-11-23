@@ -1,3 +1,6 @@
+/* ------------- Clases propias del estilo del Juego --------------- 
+   Se forzaron (override) clases con el argumento !important */
+
 @font-face {
   font-family: gameFont;
   src: url('../fonts/PressStart2P.ttf');
@@ -12,6 +15,9 @@ body {
   background-size: cover;
 }
 
+
+/* -- Contenedor Principal -- */
+
 .main-container {
   width: 90%;
   margin: 0 auto;
@@ -20,20 +26,33 @@ body {
   justify-content: space-between;
 }
 
+
+/* -- Titulo del Juego -- */
+
 .main-titulo {
   font-family: gameFont;
   font-size: 3em;
   color: #DCFF0E;
   width: 100%;
+  text-align: left !important;
 }
 
+
+/* -- Titulo del Juego Itermitente -- */
+
 .main-titulo-blink {
-  color: #FF4007;
+  color: #FF4007 !important;
 }
+
+
+/* -- Borde de Tablero al momento de coincidencia y borrado -- */
 
 .blink-border {
   border: 10px solid #DCFF0E !important;
 }
+
+
+/* -- Tablero de Caramelos -- */
 
 .panel-tablero {
   width: 70%;
@@ -45,6 +64,9 @@ body {
   flex-flow: row wrap;
   margin-top: 0;
 }
+
+
+/* -- Panel de Puntuacion, Movimiento, Tiempo y Boton del Juego -- */
 
 .panel-score {
   width: 25%;
@@ -72,18 +94,59 @@ body {
   justify-content: center;
 }
 
+
+/* -- Titulos del Panel de Puntuacion -- */
+
 .data-titulo,
 .data-info {
   font-family: gameFont;
   color: #E8CA06;
 }
 
+.data-info {
+  font-size: 1.8em;
+}
+
+
+/* -- Titulo de Finalizacion del Juego -- */
+
 .titulo-over {
   font-family: gameFont;
   font-size: 3em;
+  width: 100%;
   text-align: center;
   color: #DCFF0E;
 }
+
+
+/* -- Clase para coincidencia y soltado de caramelo -- */
+
+.dragandrop {
+  position: relative;
+  width: 99.4px;
+  height: 95px;
+  z-index: 5;
+}
+
+
+/* -- Clase para arrastre de caramelo y verificacion -- */
+
+.candy {
+  position: relative;
+  width: 99.4px;
+  height: 95px;
+  z-index: 5;
+}
+
+
+/* -- Clase para el marcado y eliminacion de caramelo -- */
+
+.match-candy {
+  background: radial-gradient(circle closest-corner, transparent, transparent, white, transparent, transparent);
+}
+
+
+/* -- Boton de Iniciar/Reiniciar del Juego -- */
 
 .btn-reinicio {
   background: #E8CA06;
@@ -103,9 +166,8 @@ body {
   font-size: 1em;
 }
 
-.data-info {
-  font-size: 1.8em;
-}
+
+/* -- Columnas del tablero de Juego para organizacion de caramelos --*/
 
 div[class^='col'] {
   width: 14.28%;
@@ -114,22 +176,4 @@ div[class^='col'] {
   justify-content: flex-end;
   align-items: center;
   margin-top: 0;
-}
-
-.dragandrop {
-  position: relative;
-  width: 99.4px;
-  height: 95px;
-  z-index: 5;
-}
-
-.candy {
-  position: relative;
-  width: 99.4px;
-  height: 95px;
-  z-index: 5;
-}
-
-.match-candy {
-  border-radius: 40%;
 }
